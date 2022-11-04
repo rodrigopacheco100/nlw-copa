@@ -12,9 +12,56 @@ datasource db {
 }
 
 model Pool {
-  id        String   @id @default(cuid())
-  title     String
-  code      String   @unique
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id           String        @id @default(cuid())
+  title        String
+  code         String        @unique
+  ownerId      String?
+  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime      @default(now())
+  owner        User?         @relation(fields: [ownerId], references: [id])
+  participants Participant[]
+}
+
+model Participant {
+  id      String  @id @default(cuid())
+  userId  String
+  poolId  String
+  guesses Guess[]
+  user    User    @relation(fields: [userId], references: [id])
+  pool    Pool    @relation(fields: [poolId], references: [id])
+
+  @@unique([userId, poolId])
+}
+
+model User {
+  id               String        @id @default(cuid())
+  name             String
+  email            String        @unique
+  avatarUrl        String?
+  updatedAt        DateTime      @updatedAt
+  createdAt        DateTime      @default(now())
+  participantingAt Participant[]
+  ownPools         Pool[]
+}
+
+model Game {
+  id                    String   @id @default(cuid())
+  date                  DateTime
+  firstTeamCountryCode  String
+  secondTeamCountryCode String
+  updatedAt             DateTime @updatedAt
+  createdAt             DateTime @default(now())
+  guesses               Guess[]
+}
+
+model Guess {
+  id               String      @id @default(cuid())
+  firstTeamPoints  Int
+  secondTeamPoints Int
+  updatedAt        DateTime    @updatedAt
+  createdAt        DateTime    @default(now())
+  gameId           String
+  participantId    String
+  game             Game        @relation(fields: [gameId], references: [id])
+  participant      Participant @relation(fields: [participantId], references: [id])
 }
