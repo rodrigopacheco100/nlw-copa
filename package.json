@@ -8,7 +8,7 @@
     "packages": [
       "workspaces/**"
     ],
-    "nohoist": ["**/@expo-google-fonts/**", "**/expo*"]
+    "nohoist": ["**/@expo-google-fonts/**", "**/expo*", "**/@expo/*"]
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.42.0",
