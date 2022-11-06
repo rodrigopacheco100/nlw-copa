@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 
+import { api } from "../services/api";
+
 WebBrowser.maybeCompleteAuthSession();
 
 type UserProps = {
@@ -18,7 +20,7 @@ type UserProps = {
 };
 
 export type AuthContextDataProps = {
-  user: UserProps;
+  user: UserProps | null;
   isUserLoading: boolean;
   signIn: () => Promise<void>;
 };
@@ -34,7 +36,7 @@ type AuthContextProviderProps = {
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   children,
 }) => {
-  const [user, setUser] = useState<UserProps>({} as UserProps);
+  const [user, setUser] = useState<UserProps | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(false);
 
   const [, response, promptAsync] = Google.useAuthRequest({
@@ -65,8 +67,30 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     [signIn, isUserLoading, user]
   );
 
-  const signInWithGoogle = useCallback((accessToken: string) => {
-    console.log(accessToken);
+  const signInWithGoogle = useCallback(async (accessToken: string) => {
+    try {
+      setIsUserLoading(true);
+
+      const {
+        data: { token },
+      } = await api.post("auth/google", {
+        accessToken,
+      });
+
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      const { data } = await api.get("/me");
+
+      setUser({
+        name: data.user.name,
+        avatarUrl: data.user.avatarUrl,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    } finally {
+      setIsUserLoading(false);
+    }
   }, []);
 
   useEffect(() => {

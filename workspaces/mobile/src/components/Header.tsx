@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { Text, HStack, Box } from "native-base";
 import { CaretLeft, Export } from "phosphor-react-native";
 
@@ -17,6 +18,8 @@ export function Header({
   // eslint-disable-next-line react/no-unstable-nested-components
   const EmptyBoxSpace = () => <Box w={6} h={6} />;
 
+  const { navigate } = useNavigation();
+
   return (
     <HStack
       w="full"
@@ -27,7 +30,11 @@ export function Header({
       px={5}
     >
       <HStack w="full" alignItems="center" justifyContent="space-between">
-        {showBackButton ? <ButtonIcon icon={CaretLeft} /> : <EmptyBoxSpace />}
+        {showBackButton ? (
+          <ButtonIcon onPress={() => navigate("pools")} icon={CaretLeft} />
+        ) : (
+          <EmptyBoxSpace />
+        )}
 
         <Text
           color="white"

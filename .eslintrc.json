@@ -67,6 +67,7 @@
     "class-methods-use-this": "off",
     "no-useless-constructor": "off",
     "react/require-default-props": "off",
+    "react/no-unstable-nested-components": "off",
     "no-console": "off",
     "no-shadow": "off",
     "import/no-extraneous-dependencies": "off",
